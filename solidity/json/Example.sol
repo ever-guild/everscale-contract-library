@@ -10,21 +10,21 @@ contract ExampleContract {
     function generateJSON() external returns (string) {
         JsonWriter.Json writer;
 
-        writer = writer.writeStart();
+        writer.writeStart();
         
-        writer = writer.writeString("Product", "PC");
+        writer.writeString("Product", "PC");
 
-        writer = writer.writeStartArray("Drives");
-        writer = writer.writeArrayString("500 gb");
-        writer = writer.writeArrayNumber("500");
-        writer = writer.writeEndArray();
+        writer.writeStartArray("Drives");
+        writer.writeArrayString("500 gb");
+        writer.writeArrayNumber("500");
+        writer.writeEndArray();
 
-        writer = writer.writeStartName("network");
-        writer = writer.writeString("lan", "true");
-        writer = writer.writeString("wifi", "false");
-        writer = writer.writeEnd();
+        writer.writeStartName("network");
+        writer.writeString("lan", "true");
+        writer.writeString("wifi", "false");
+        writer.writeEnd();
 
-        writer = writer.writeEnd();
+        writer.writeEnd();
 
         return writer.value;
     }
