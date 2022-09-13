@@ -32,12 +32,12 @@ owners = "$(shell cat .custodian)"
 inputDeploy = "owners:[${owners}],reqConfirms:2"
 
 .codeHash:
-	npx tonos-cli --json \
+	@npx tonos-cli --json \
 decode stateinit \
 --tvc SetcodeMultisigWallet.tvc | jq -r .code_hash > .codeHash
 
 .code:
-	npx tonos-cli --json \
+	@npx tonos-cli --json \
 decode stateinit \
 --tvc SetcodeMultisigWallet.tvc | jq -r .code > .code
 
@@ -48,18 +48,18 @@ run --abi SetcodeMultisigWallet.abi.json \
 | jq -r .updates[0].id > .updateRequestId
 
 .addr:
-	npx everdev contract info \
+	@npx everdev contract info \
 --network ${net} \
 SetcodeMultisigWallet \
 | grep Address | cut -d ' ' -f 4 > .addr
 
-info: .addr .updateRequestId
+info: .addr .updateRequestId .codeHash
 	@echo "address:$(shell cat .addr)"
 	@echo "codeHash:$(shell cat .codeHash)"
 	@echo "updateRequestId:$(shell cat .updateRequestId)"
 
 topup:
-	npx everdev contract topup \
+	@npx everdev contract topup \
 --address "$(shell cat .addr)" \
 --value ${value}
 
@@ -93,3 +93,4 @@ SetcodeMultisigWallet \
 --run-signer ${signer} \
 executeUpdate \
 --input "updateId:$(shell cat .updateRequestId),code:$(shell cat .code)"
+	rm -f .updateRequestId
