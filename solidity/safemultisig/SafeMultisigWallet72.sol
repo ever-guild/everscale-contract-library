@@ -46,7 +46,7 @@ contract MultisigWallet is IAccept {
      *  Constants
      */
     uint8   constant MAX_QUEUED_REQUESTS = 5;
-    uint64  constant EXPIRATION_TIME = 3600; // lifetime is 1 hour
+    uint64  constant EXPIRATION_TIME = 259200; // lifetime is 72 hour
     uint8   constant MAX_CUSTODIAN_COUNT = 32;
     uint128 constant MIN_VALUE = 1e6;
     uint    constant MAX_CLEANUP_TXNS = 40;
@@ -182,7 +182,7 @@ contract MultisigWallet is IAccept {
     }
 
     /// @dev Returns transfer flags according to input value and `allBalance` flag.
-    function _getSendFlags(uint128 value, bool allBalance) inline private pure returns (uint8, uint128) {        
+    function _getSendFlags(uint128 value, bool allBalance) inline private pure returns (uint8, uint128) {
         uint8 flags = FLAG_IGNORE_ERRORS | FLAG_PAY_FWD_FEE_FROM_BALANCE;
         if (allBalance) {
             flags = FLAG_IGNORE_ERRORS | FLAG_SEND_ALL_REMAINING;
@@ -246,7 +246,7 @@ contract MultisigWallet is IAccept {
         require(_getMaskValue(m_requestsMask, index) < MAX_QUEUED_REQUESTS, 113);
         tvm.accept();
 
-        (uint8 flags, uint128 realValue) = _getSendFlags(value, allBalance);        
+        (uint8 flags, uint128 realValue) = _getSendFlags(value, allBalance);
         uint8 requiredSigns = m_defaultRequiredConfirmations;
 
         if (requiredSigns == 1) {
@@ -268,7 +268,7 @@ contract MultisigWallet is IAccept {
     function confirmTransaction(uint64 transactionId) public {
         uint8 index = _findCustodian(msg.pubkey());
         _removeExpiredTransactions();
-        (bool trexists, Transaction  txn) = m_transactions.fetch(transactionId);        
+        (bool trexists, Transaction  txn) = m_transactions.fetch(transactionId);
         require(trexists, 102);
         require(!_isConfirmed(txn.confirmationsMask, index), 103);
         tvm.accept();
@@ -314,14 +314,14 @@ contract MultisigWallet is IAccept {
 
             (trId, txn, success) = m_transactions.next(trId);
             needCleanup = success && (trId <= marker);
-        }        
+        }
         tvm.commit();
     }
 
     /*
      * Get methods
      */
-    
+
     /// @dev Helper get-method for checking if custodian confirmation bit is set.
     /// @return confirmed True if confirmation bit is set.
     function isConfirmed(uint32 mask, uint8 index) public pure returns (bool confirmed) {
@@ -400,12 +400,12 @@ contract MultisigWallet is IAccept {
             custodians.push(CustodianInfo(index, key));
             (key, index, success) = m_custodians.next(key);
         }
-    }    
+    }
 
     /*
      * Fallback and receive functions to receive simple transfers.
      */
-    
+
     fallback () external payable {}
 
     receive () external payable {}
